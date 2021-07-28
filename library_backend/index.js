@@ -97,22 +97,39 @@ const typeDefs = gql`
     genres: [String!]!
   }
 
+  type Author {
+    name: String!
+    id: ID!
+    born: Int
+    bookCount: Int
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks: [Book!]!
+    allAuthors: [Author!]!
   }
 `;
 
 const resolvers = {
   Query: {
     bookCount: () => books.length,
-    authorCount: () => {
-      return books
-        .map((item) => item.author)
-        .filter((el, index, self) => self.indexOf(el) === index).length;
-    },
+    authorCount: () => authors.length,
+    // authorCount: () => {
+    //   return books
+    //     .map((item) => item.author)
+    //     .filter((el, index, self) => self.indexOf(el) === index).length;
+    // },
     allBooks: () => books,
+    allAuthors: () => authors,
+  },
+
+  Author: {
+    bookCount: (root) => {
+      return books.filter((book) => (book.author === root.name ? book : ""))
+        .length;
+    },
   },
 };
 
