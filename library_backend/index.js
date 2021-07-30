@@ -162,6 +162,7 @@ const resolvers = {
         const author = { name: args.author, id: uuid() };
         authors = authors.concat(author);
       }
+
       const book = { ...args, id: uuid() };
       books = books.concat(book);
       return book;
@@ -172,8 +173,11 @@ const resolvers = {
       if (!foundAuthor) {
         return null;
       }
-      const updatedAuthor = { ...args, born: args.born };
-      authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a));
+
+      const updatedAuthor = { ...foundAuthor, born: args.born };
+      authors = authors.map((a) =>
+        a.id === foundAuthor.id ? updatedAuthor : a
+      );
       return updatedAuthor;
     },
   },

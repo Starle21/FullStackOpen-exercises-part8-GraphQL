@@ -24,11 +24,11 @@ const App = () => {
 
       <Notify errorMessage={errorMessage} />
 
-      <Authors show={page === "authors"} />
+      <Authors show={page === "authors"} notify={notify} />
 
       <Books show={page === "books"} />
 
-      <NewBook show={page === "add"} notify={notify} />
+      <NewBook show={page === "add"} />
     </div>
   );
 };
