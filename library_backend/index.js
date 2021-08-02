@@ -220,15 +220,11 @@ const resolvers = {
       return book;
     },
     editAuthor: async (root, args) => {
-      console.log("before", args);
       const author = await Author.findOne({ name: args.name });
-      console.log("found", author);
       if (!author) {
         return null;
       }
       author.born = args.born;
-
-      console.log("born", author);
 
       try {
         await author.save();
