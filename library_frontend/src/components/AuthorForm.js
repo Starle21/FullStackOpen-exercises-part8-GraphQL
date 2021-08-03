@@ -19,8 +19,10 @@ const AuthorForm = ({ notify, authors }) => {
   const submit = async (event) => {
     event.preventDefault();
 
+    if (!born || !parseInt(born)) return notify("born needs to be a number");
+
     await updateAuthor({
-      variables: { name: selectedOption, born },
+      variables: { name: selectedOption, born: parseInt(born) },
     });
 
     setSelectedOption("");
@@ -72,7 +74,7 @@ const AuthorForm = ({ notify, authors }) => {
           born
           <input
             value={born}
-            onChange={({ target }) => setBorn(parseInt(target.value))}
+            onChange={({ target }) => setBorn(target.value)}
           />
         </div>
         <button type="submit">update birth year of the author</button>

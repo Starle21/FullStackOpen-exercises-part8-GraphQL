@@ -36,7 +36,9 @@ const Authors = (props) => {
           ))}
         </tbody>
       </table>
-      <AuthorForm notify={props.notify} authors={authors} />
+      {props.token ? (
+        <AuthorForm notify={props.notify} authors={authors} />
+      ) : null}
     </div>
   );
 };

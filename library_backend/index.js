@@ -124,9 +124,9 @@ const typeDefs = gql`
   type Book {
     id: ID!
     title: String!
-    author: Author
+    author: Author!
     published: Int!
-    genres: [String!]!
+    genres: [String!]
   }
 
   type Author {
@@ -158,7 +158,7 @@ const typeDefs = gql`
     addBook(
       title: String!
       author: String
-      published: Int
+      published: Int!
       genres: [String!]
     ): Book
     editAuthor(name: String!, born: Int!): Author
