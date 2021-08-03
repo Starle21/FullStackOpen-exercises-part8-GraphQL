@@ -41,7 +41,6 @@ const App = () => {
   };
 
   const showPage = async (page) => {
-    console.log("show page");
     setPage(page);
   };
 

@@ -185,6 +185,7 @@ const resolvers = {
       // }
       // if (args.author)
       //   return books.filter((book) => args.author === book.author);
+      console.log("books genre", args);
       if (args.genres) {
         const booksFound = await Book.find({
           genres: { $in: args.genres },

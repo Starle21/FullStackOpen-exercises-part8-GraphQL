@@ -8,7 +8,6 @@ const LoginForm = ({ setError, setToken, show, setPage, setUser }) => {
 
   const [getUser] = useLazyQuery(ME, {
     onCompleted: (data) => {
-      console.log("from me", data);
       setUser(data.me);
       localStorage.setItem("loggedInUser", JSON.stringify(data.me));
     },
@@ -22,7 +21,6 @@ const LoginForm = ({ setError, setToken, show, setPage, setUser }) => {
 
   useEffect(() => {
     if (result.data) {
-      console.log(result.data);
       const token = result.data.login.value;
       setToken(token);
       localStorage.setItem("library-user-token", token);
@@ -34,7 +32,7 @@ const LoginForm = ({ setError, setToken, show, setPage, setUser }) => {
   const submit = async (event) => {
     event.preventDefault();
     const { data } = await login({ variables: { username, password } });
-    console.log(data);
+    // console.log(data);
     setUsername("");
     setPassword("");
   };
