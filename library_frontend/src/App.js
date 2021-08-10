@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useApolloClient } from "@apollo/client";
+import { useApolloClient, useSubscription } from "@apollo/client";
 
 import Authors from "./components/Authors";
 import Books from "./components/Books";
@@ -7,14 +7,27 @@ import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import Recommendations from "./components/Recommendations";
 
+import { BOOK_ADDED } from "./queries";
+
 const App = () => {
   const [page, setPage] = useState("authors");
   const [token, setToken] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [type, setType] = useState(null);
 
   const [user, setUser] = useState(null);
 
   const client = useApolloClient();
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      notify(
+        `Book named ${subscriptionData.data.bookAdded.title} was added!`,
+        "notify"
+      );
+      console.log(subscriptionData);
+    },
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("library-user-token");
@@ -33,8 +46,9 @@ const App = () => {
     setPage("authors");
   };
 
-  const notify = (message) => {
+  const notify = (message, type = "error") => {
     setErrorMessage(message);
+    setType(type);
     setTimeout(() => {
       setErrorMessage(null);
     }, 10000);
@@ -60,13 +74,13 @@ const App = () => {
         )}
       </div>
 
-      <Notify errorMessage={errorMessage} />
+      <Notify errorMessage={errorMessage} type={type} />
 
       <Authors show={page === "authors"} notify={notify} token={token} />
 
       <Books show={page === "books"} />
 
-      <NewBook show={page === "add"} setPage={setPage} />
+      <NewBook show={page === "add"} setPage={setPage} notify={notify} />
 
       <Recommendations show={page === "recommend"} user={user} />
 
@@ -81,10 +95,14 @@ const App = () => {
   );
 };
 
-const Notify = ({ errorMessage }) => {
+const Notify = ({ errorMessage, type }) => {
   if (!errorMessage) {
     return null;
   }
+  if (type === "notify") {
+    return <div style={{ color: "green" }}>{errorMessage}</div>;
+  }
+
   return <div style={{ color: "red" }}>{errorMessage}</div>;
 };
 

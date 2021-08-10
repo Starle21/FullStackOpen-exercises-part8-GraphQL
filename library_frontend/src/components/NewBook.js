@@ -23,6 +23,10 @@ const NewBook = (props) => {
         },
       });
     },
+    onError: (error) => {
+      error.graphQLErrors[0] && props.notify(error.graphQLErrors[0].message);
+      error.graphQLErrors[0] || props.notify("Fill out all the input fields");
+    },
   });
 
   if (!props.show) {
