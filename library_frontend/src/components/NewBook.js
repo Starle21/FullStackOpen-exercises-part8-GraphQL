@@ -14,14 +14,15 @@ const NewBook = (props) => {
     refetchQueries: [{ query: ALL_AUTHORS }],
     // refetchQueries: [{ query: ALL_BOOKS }, { query: ALL_AUTHORS }],
     update: (store, response) => {
-      const dataInStore = store.readQuery({ query: ALL_BOOKS });
-      store.writeQuery({
-        query: ALL_BOOKS,
-        data: {
-          ...dataInStore,
-          allBooks: [...dataInStore.allBooks, response.data.addBook],
-        },
-      });
+      // const dataInStore = store.readQuery({ query: ALL_BOOKS });
+      // store.writeQuery({
+      //   query: ALL_BOOKS,
+      //   data: {
+      //     ...dataInStore,
+      //     allBooks: [...dataInStore.allBooks],
+      //   },
+      // });
+      props.updateCacheWith(response.data.addBook);
     },
     onError: (error) => {
       error.graphQLErrors[0] && props.notify(error.graphQLErrors[0].message);
