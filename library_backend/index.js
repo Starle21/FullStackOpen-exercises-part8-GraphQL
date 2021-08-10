@@ -35,6 +35,8 @@ mongoose
 
 console.log("connecting to", MONGODB_URI);
 
+mongoose.set("debug", true);
+
 // let authors = [
 //   {
 //     name: "Robert Martin",
@@ -137,6 +139,7 @@ const typeDefs = gql`
     id: ID!
     born: Int
     bookCount: Int
+    books: [Book!]
   }
 
   type User {
@@ -192,7 +195,7 @@ const resolvers = {
       // }
       // if (args.author)
       //   return books.filter((book) => args.author === book.author);
-      console.log("books genre", args);
+      // console.log("books genre", args);
       if (args.genres) {
         const booksFound = await Book.find({
           genres: { $in: args.genres },
@@ -202,24 +205,28 @@ const resolvers = {
       const books = await Book.find({}).populate("author");
       return books;
     },
-    allAuthors: () => Author.find({}),
+    allAuthors: () => {
+      // console.log("Finding author");
+      return Author.find({});
+    },
     me: (root, args, context) => {
       return context.currentUser;
     },
   },
 
-  Author: {
-    bookCount: async (root) => {
-      const books = await Book.find({ author: root._id });
-      return books.length;
-      // // try {
-      // // } catch (error) {
-      // //   throw new UserInputError(error.message, {
-      // //     invalidArgs: args,
-      // //   });
-      // // }
-    },
-  },
+  // Author: {
+  //   bookCount: async (root) => {
+  //     console.log("Finding book");
+  //     const books = await Book.find({ author: root._id });
+  //     return books.length;
+  //     // // try {
+  //     // // } catch (error) {
+  //     // //   throw new UserInputError(error.message, {
+  //     // //     invalidArgs: args,
+  //     // //   });
+  //     // // }
+  //   },
+  // },
 
   Mutation: {
     addBook: async (root, args, context) => {
@@ -230,25 +237,37 @@ const resolvers = {
       }
 
       // author exists
-      let authorExisting = await Author.findOne({ name: args.author });
+      let authorExisting = await Author.findOne({
+        name: args.author,
+      }).populate("books");
 
       // author doesn't exist
       if (!authorExisting) {
-        authorExisting = new Author({ name: args.author });
-        try {
-          await authorExisting.save();
-        } catch (error) {
-          throw new UserInputError(error.message, {
-            invalidArgs: args,
-          });
-        }
+        authorExisting = new Author({
+          name: args.author,
+          bookCount: 0,
+        });
+        // console.log(`author not Existing`, authorExisting);
+        // try {
+        //   await authorExisting.save();
+        // } catch (error) {
+        //   throw new UserInputError(error.message, {
+        //     invalidArgs: args,
+        //   });
+        // }
       }
 
       const bookToSave = { ...args, author: authorExisting };
       const book = new Book(bookToSave);
+      // console.log(book);
 
       try {
         await book.save();
+        // console.log(authorExisting);
+        authorExisting.books = authorExisting.books.concat(book._id);
+        authorExisting.bookCount = authorExisting.books.length;
+        // console.log(authorExisting);
+        await authorExisting.save();
       } catch (error) {
         throw new UserInputError(error.message, {
           invalidArgs: args,
